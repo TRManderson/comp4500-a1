@@ -22,10 +22,21 @@ import org.junit.runners.Parameterized;
  */
 @RunWith(Parameterized.class)
 public class DelegateFinderTest {
-    private TestEntry fixture;
+    private Set<Delegate> delegates;
+    private DGraphAdj<Vertex, Event> graph;
+    private Vertex start;
+    private Vertex end;
+    private Set<Delegate> initial;
+    private Set<Delegate> expectedResult;
 
     public DelegateFinderTest(Supplier<TestEntry> fixtureGenerator){
-        fixture = fixtureGenerator.get();
+        TestEntry entry = fixtureGenerator.get();
+        delegates = entry.delegates;
+        graph = entry.graph;
+        start = entry.start;
+        end = entry.end;
+        initial = entry.initial;
+        expectedResult = entry.expectedResult;
     }
 
     private static class TestEntry{
@@ -34,22 +45,22 @@ public class DelegateFinderTest {
         private Vertex start;
         private Vertex end;
         private Set<Delegate> initial;
-        private Set<Delegate> result;
+        private Set<Delegate> expectedResult;
 
         public TestEntry(Set<Delegate> delegates,
                          DGraphAdj<Vertex, Event> graph, Vertex start, Vertex end,
-                         Set<Delegate> initial, Set<Delegate> result){
+                         Set<Delegate> initial, Set<Delegate> expectedResult){
             this.delegates = delegates;
             this.graph = graph;
             this.start = start;
             this.end = end;
             this.initial = initial;
-            this.result = result;
+            this.expectedResult = expectedResult;
         }
     }
 
     @Parameterized.Parameters
-    public static Iterable<Supplier<TestEntry>> testEntry() {
+    public static Iterable<Supplier<TestEntry>> testSupplier() {
         List<Supplier<TestEntry>> data = new LinkedList<>();
         data.add(() -> {
             // the delegates who will take part in the summit
@@ -105,10 +116,10 @@ public class DelegateFinderTest {
     @Test
     public void testExpectedResult(){
         Set<Delegate> result = DelegateFinder.findDelegates(
-                fixture.delegates, fixture.graph,
-                fixture.start, fixture.end,
-                fixture.initial);
-        Assert.assertEquals(fixture.result, result);
+                delegates, graph,
+                start, end,
+                initial);
+        Assert.assertEquals(expectedResult, result);
     }
 
     public static Event createEvent(Delegate[] delegatesArray,
