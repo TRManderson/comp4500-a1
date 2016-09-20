@@ -35,7 +35,68 @@ public class DelegateFinder {
 	public static Set<Delegate> findDelegates(Set<Delegate> delegates,
 			DGraphAdj<Vertex, Event> graph, Vertex start, Vertex end,
 			Set<Delegate> initial) {
-		return null; // REMOVE THIS LINE AND WRITE THIS METHOD
-	}
+        Problem p = new Problem(delegates, graph, start, end, initial);
+        return p.solve();
+    }
 
+    private static class Problem{
+        private DGraphAdj<Vertex, Event> graph;
+        private Vertex start;
+        private Vertex end;
+        private Set<Delegate> initial;
+        private Set<Delegate> delegates;
+
+        public Problem(Set<Delegate> delegates,
+                       DGraphAdj<Vertex, Event> graph, Vertex start, Vertex end,
+                       Set<Delegate> initial){
+            this.graph = graph;
+            this.start = start;
+            this.end = end;
+            this.initial = initial;
+            this.delegates = delegates;
+        }
+
+        public Set<Delegate> solve(){
+            Set<Delegate> maybe = new HashSet<>();
+            Queue<Step> steps = new LinkedList<>();
+            steps.add(new Step(start, initial));
+            while (!steps.isEmpty()){
+                Step s = steps.remove();
+                if (s.v.equals(end)){
+                    maybe.addAll(s.delegates);
+                } else {
+                    steps.addAll(step(s));
+                }
+            }
+            return maybe;
+        }
+
+
+        public List<Step> step(Step s){
+            List<Step> result = new ArrayList<>();
+            for (AdjacentEdge<Vertex, Event> e :
+                    graph.adjacent(s.v)) {
+                Event m = e.edgeInfo;
+                Set<Delegate> newDelegates = new HashSet<>();
+                for (Delegate d : delegates) {
+                    Set<Delegate> dependent = m.getDependentDelegates(d);
+                    dependent.retainAll(s.delegates);
+                    if (!dependent.isEmpty()){
+                        newDelegates.add(d);
+                    }
+                }
+                result.add(new Step(e.target, newDelegates));
+            }
+            return result;
+        }
+
+        private class Step{
+            public Vertex v;
+            public Set<Delegate> delegates;
+            public Step(Vertex v, Set<Delegate> current){
+                this.v = v;
+                this.delegates = current;
+            }
+        }
+    }
 }
