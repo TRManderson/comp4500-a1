@@ -127,7 +127,7 @@ public class DelegateFinderTest {
         Map<Delegate, Set<Delegate>> event = new HashMap<>();
         for (int i = 0; i < delegatesArray.length; i++) {
             event.put(delegatesArray[i],
-                    new HashSet<Delegate>(Arrays.asList(dependentArray[i])));
+                    new HashSet<>(Arrays.asList(dependentArray[i])));
         }
         return new Event(event);
     }

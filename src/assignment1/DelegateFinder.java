@@ -2,7 +2,12 @@ package assignment1;
 
 import graphs.*;
 import graphs.Graph.AdjacentEdge;
+import sun.misc.Cache;
+
+import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DelegateFinder {
 
@@ -40,11 +45,35 @@ public class DelegateFinder {
     }
 
     private static class Problem{
+        private static class CacheKey{
+            private Vertex source;
+            private Vertex target;
+            public CacheKey(Vertex source, Vertex target){
+                this.source = source;
+                this.target = target;
+            }
+
+            @Override
+            public String toString() {
+                return source + " -> " + target ;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj.toString().equals(toString());
+            }
+
+            @Override
+            public int hashCode() {
+                return source.toString().hashCode() + 13 * target.toString().hashCode();
+            }
+        };
         private DGraphAdj<Vertex, Event> graph;
         private Vertex start;
         private Vertex end;
         private Set<Delegate> initial;
         private Set<Delegate> delegates;
+        private Map<CacheKey, Map<Set<Delegate>, Set<Delegate>>> cache;
 
         public Problem(Set<Delegate> delegates,
                        DGraphAdj<Vertex, Event> graph, Vertex start, Vertex end,
@@ -54,47 +83,59 @@ public class DelegateFinder {
             this.end = end;
             this.initial = initial;
             this.delegates = delegates;
+            cache = new HashMap<>();
         }
 
         public Set<Delegate> solve(){
-            Set<Delegate> maybe = new HashSet<>();
             Queue<Step> steps = new LinkedList<>();
-            steps.add(new Step(start, initial));
+            steps.add(new Step(start, start, initial));
             while (!steps.isEmpty()){
                 Step s = steps.remove();
-                if (s.v.equals(end)){
-                    maybe.addAll(s.delegates);
-                } else {
-                    steps.addAll(step(s));
+                for (AdjacentEdge<Vertex, Event> edge : graph.adjacent(s.vertex)){
+                    CacheKey key = new CacheKey(s.vertex, edge.target);
+                    if (!cache.containsKey(key)){
+                        cache.put(key, new HashMap<>());
+                    }
+                    if(cache.get(key).containsKey(s.delegates)){
+                        continue;
+                    }
+                    Set<Delegate> newDelegates = stepDelegates(edge.edgeInfo, s.delegates);
+                    cache.get(key).put(s.delegates, newDelegates);
+                    steps.add(new Step(s.vertex, edge.target, newDelegates));
                 }
             }
-            return maybe;
+
+            return resultFromCache();
         }
 
+        public Set<Delegate> resultFromCache(){
+            return cache.entrySet().stream()
+                    .filter(entry-> entry.getKey().target.equals(end))
+                    .map(Map.Entry::getValue)
+                    .flatMap(a -> a.values().stream())
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toSet());
+        }
 
-        public List<Step> step(Step s){
-            List<Step> result = new ArrayList<>();
-            for (AdjacentEdge<Vertex, Event> e :
-                    graph.adjacent(s.v)) {
-                Event m = e.edgeInfo;
-                Set<Delegate> newDelegates = new HashSet<>();
-                for (Delegate d : delegates) {
-                    Set<Delegate> dependent = m.getDependentDelegates(d);
-                    dependent.retainAll(s.delegates);
-                    if (!dependent.isEmpty()){
-                        newDelegates.add(d);
-                    }
+        public Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
+            Set<Delegate> result = new HashSet<>();
+            for (Delegate d : delegates){
+                Set<Delegate> dependent = e.getDependentDelegates(d);
+                dependent.retainAll(initial);
+                if (!dependent.isEmpty()){
+                    result.add(d);
                 }
-                result.add(new Step(e.target, newDelegates));
             }
             return result;
         }
 
-        private class Step{
-            public Vertex v;
+        private static class Step{
+            public Vertex parent;
+            public Vertex vertex;
             public Set<Delegate> delegates;
-            public Step(Vertex v, Set<Delegate> current){
-                this.v = v;
+            public Step(Vertex parent, Vertex v, Set<Delegate> current){
+                this.parent = parent;
+                this.vertex = v;
                 this.delegates = current;
             }
         }
