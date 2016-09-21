@@ -137,17 +137,17 @@ public class DelegateFinderTest {
                 { { delegates[1] }, { delegates[2] }, { delegates[3] },
                         { delegates[4] }, { delegates[0] } },
 
-                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-                        { delegates[3] }, { delegates[4] } },
-
-                { { delegates[1] }, { delegates[2] }, { delegates[3] },
-                        { delegates[4] }, { delegates[0] } },
-
-                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-                        { delegates[3] }, { delegates[4] } },
-
-                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-                        { delegates[3] }, { delegates[4] } },
+//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
+//                        { delegates[3] }, { delegates[4] } },
+//
+//                { { delegates[1] }, { delegates[2] }, { delegates[3] },
+//                        { delegates[4] }, { delegates[0] } },
+//
+//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
+//                        { delegates[3] }, { delegates[4] } },
+//
+//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
+//                        { delegates[3] }, { delegates[4] } },
             };
 
             Event[] events = {
@@ -179,10 +179,12 @@ public class DelegateFinderTest {
 
     @Test
     public void testExpectedResult(){
+        long start_time = System.currentTimeMillis();
         Set<Delegate> result = DelegateFinder.findDelegates(
                 delegates, graph,
                 start, end,
                 initial);
+        System.err.println((System.currentTimeMillis() - start_time) + "ms");
         Assert.assertEquals(expectedResult, result);
     }
 
