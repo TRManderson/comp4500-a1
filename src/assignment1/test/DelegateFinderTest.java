@@ -63,6 +63,69 @@ public class DelegateFinderTest {
     @Parameterized.Parameters
     public static Iterable<Supplier<TestEntry>> testSupplier() {
         List<Supplier<TestEntry>> data = new LinkedList<>();
+
+        Supplier<TestEntry> cycleGraph = () -> {
+            Delegate[] delegates = {
+                    new Delegate("d" + 0), new Delegate("d" + 1),
+                    new Delegate("d" + 3), new Delegate("d" + 2),
+                    new Delegate("d" + 4)
+            };
+            Vertex start = new Vertex();
+            Vertex end = new Vertex();
+            Set<Delegate> initial = new HashSet<>();
+            initial.add(delegates[0]);
+            Set<Delegate> expectedResult = new HashSet<>(Arrays.asList(delegates));
+            DGraphAdj<Vertex, Event> graph = new DGraphAdj<>();
+
+            Vertex[] vertices = {start, end, new Vertex(), new Vertex(), new Vertex(), new Vertex()};
+
+            for (Vertex v : vertices){
+                graph.addVertex(v);
+            }
+
+            Delegate[][][] eventArray = {
+                    { { delegates[0] }, { delegates[1] }, { delegates[2] },
+                            { delegates[3] }, { delegates[4] } },
+
+                    { { delegates[1] }, { delegates[2] }, { delegates[3] },
+                            { delegates[4] }, { delegates[0] } },
+
+//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
+//                        { delegates[3] }, { delegates[4] } },
+//
+//                { { delegates[1] }, { delegates[2] }, { delegates[3] },
+//                        { delegates[4] }, { delegates[0] } },
+//
+//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
+//                        { delegates[3] }, { delegates[4] } },
+//
+//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
+//                        { delegates[3] }, { delegates[4] } },
+            };
+
+            Event[] events = {
+                    createEvent(delegates, eventArray[0]),
+                    createEvent(delegates, eventArray[1]),
+//                createEvent(delegates, eventArray[2]),
+//                createEvent(delegates, eventArray[3]),
+//                createEvent(delegates, eventArray[4]),
+            };
+
+            graph.addEdge(vertices[0], vertices[2], events[0]);
+            graph.addEdge(vertices[2], vertices[3], events[0]);
+            graph.addEdge(vertices[2], vertices[4], events[0]);
+            graph.addEdge(vertices[3], vertices[5], events[0]);
+            graph.addEdge(vertices[5], vertices[2], events[1]);
+            graph.addEdge(vertices[5], vertices[1], events[0]);
+
+            return new TestEntry(
+                    new HashSet<>(Arrays.asList(delegates)),
+                    graph, start, end, initial, expectedResult
+            );
+        };
+
+        data.add(cycleGraph);
+
         data.add(() -> {
             // the delegates who will take part in the summit
             Delegate[] delegates = { new Delegate("d0"), new Delegate("d1"),
@@ -110,69 +173,6 @@ public class DelegateFinderTest {
             delegateSet.addAll(Arrays.asList(delegates));
             return new TestEntry(delegateSet, graph, start, end, initial, expectedResult);
         });
-
-        Supplier<TestEntry> cycleGraph = () -> {
-            Delegate[] delegates = {
-                    new Delegate("d" + 0), new Delegate("d" + 1),
-                    new Delegate("d" + 3), new Delegate("d" + 2),
-                    new Delegate("d" + 4)
-            };
-            Vertex start = new Vertex();
-            Vertex end = new Vertex();
-            Set<Delegate> initial = new HashSet<>();
-            initial.add(delegates[0]);
-            Set<Delegate> expectedResult = new HashSet<>(Arrays.asList(delegates));
-            DGraphAdj<Vertex, Event> graph = new DGraphAdj<>();
-
-            Vertex[] vertices = {start, end, new Vertex(), new Vertex(), new Vertex(), new Vertex()};
-
-            for (Vertex v : vertices){
-                graph.addVertex(v);
-            }
-
-            Delegate[][][] eventArray = {
-                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-                        { delegates[3] }, { delegates[4] } },
-
-                { { delegates[1] }, { delegates[2] }, { delegates[3] },
-                        { delegates[4] }, { delegates[0] } },
-
-//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-//                        { delegates[3] }, { delegates[4] } },
-//
-//                { { delegates[1] }, { delegates[2] }, { delegates[3] },
-//                        { delegates[4] }, { delegates[0] } },
-//
-//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-//                        { delegates[3] }, { delegates[4] } },
-//
-//                { { delegates[0] }, { delegates[1] }, { delegates[2] },
-//                        { delegates[3] }, { delegates[4] } },
-            };
-
-            Event[] events = {
-                createEvent(delegates, eventArray[0]),
-                createEvent(delegates, eventArray[1]),
-//                createEvent(delegates, eventArray[2]),
-//                createEvent(delegates, eventArray[3]),
-//                createEvent(delegates, eventArray[4]),
-            };
-
-            graph.addEdge(vertices[0], vertices[2], events[0]);
-            graph.addEdge(vertices[2], vertices[3], events[0]);
-            graph.addEdge(vertices[2], vertices[4], events[0]);
-            graph.addEdge(vertices[3], vertices[5], events[0]);
-            graph.addEdge(vertices[5], vertices[2], events[1]);
-            graph.addEdge(vertices[5], vertices[1], events[0]);
-
-            return new TestEntry(
-                    new HashSet<>(Arrays.asList(delegates)),
-                    graph, start, end, initial, expectedResult
-            );
-        };
-
-        data.add(cycleGraph);
-
 
         return data;
     }

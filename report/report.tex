@@ -1,9 +1,380 @@
+%!TEX program = xelatex
 \documentclass{article}
+\usepackage{tabularx}
+\usepackage[singlefile]{graphviz}
+\usepackage{graphicx}
+\usepackage{verbatim}
 \title{COMP4500 Assignment 1}
 \author{Tom Manderson\\Student 43159835}
 \date{Friday, 23 September, 2016}
 
+\renewcommand{\thepart}{\Alph{part}}
+\renewcommand{\thesection}{Question \arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}(\alph{subsection})}
+
 \begin{document}
 \maketitle
+\tableofcontents
+\clearpage
+
+\part{}
+\section{}
+\subsection{}
+\begin{tabular}{|l|cccccccccccc|}
+\hline
+\(d_n\) & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12\\
+\hline
+Student No & & & 4 & 3 & 1 & 5 & 8 & 9 & 3 & 5 & & \\
+\hline
+Intermediate & 9 & 8 & 4 & 3 & 1 & 5 & 8 & 9 & 3 & 5 & 5 & 2 \\
+\hline
+SNI & 9 & 8 & 4 & 3 & 1 & 5 & 8 & 9 & 3 & 5 & 8 & 2 \\
+\hline
+\end{tabular}
+
+\subsection{}
+\digraph[scale=0.7]{sni}{
+1; 2; 3; 4; 5; 6; 7; 8; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5;
+5 -> 8;
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2;
+}
+
+\section{}
+\subsection{}
+\digraph[scale=0.7]{scc1}{
+node[color=white fillcolor=white]
+1; 2; 3; 4; 5; 6; 7; 8; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5;
+5 -> 8;
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2;
+}
+
+\digraph[scale=0.7]{scc2}{
+node[color=white fillcolor=white]
+1[color=gray]; 2; 3; 4; 5; 6; 7; 8; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5;
+5 -> 8;
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2;
+}
+
+\digraph[scale=0.7]{scc3}{
+node[color=white fillcolor=white]
+1[color=gray]; 2; 3; 4; 5[color=gray]; 6; 7; 8; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5 [color="red:red"];
+5 -> 8;
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2;
+}
+
+\digraph[scale=0.7]{scc4}{
+node[color=white fillcolor=white]
+1[color=gray]; 2; 3; 4; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="red:red"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2;
+}
+
+\digraph[scale=0.7]{scc5}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=gray]; 3; 4; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="red:red"];
+}
+
+\digraph[scale=0.7]{scc6}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3; 4; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc7}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3; 4[color=gray]; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4 [color="red:red"];
+4 -> 3;
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc8}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=gray]; 4[color=gray]; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="red:red"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc9}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=gray]; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc10}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=gray]; 6; 7; 8[color=gray]; 9;
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc11}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=gray]; 6; 7; 8[color=gray]; 9[color=gray];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="red:red"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc12}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=gray]; 6; 7; 8[color=gray]; 9[color=black xlabel=13];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="black:black"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc13}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=gray]; 6; 7; 8[color=black xlabel=14]; 9[color=black xlabel=13];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="black:black"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc14}{
+node[color=white fillcolor=white]
+1[color=gray]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=black xlabel=15]; 6; 7; 8[color=black xlabel=14]; 9[color=black xlabel=13];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="black:black"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc15}{
+node[color=white fillcolor=white]
+1[color=black xlabel=16]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=black xlabel=15]; 6; 7; 8[color=black xlabel=14]; 9[color=black xlabel=13];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="black:black"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc16}{
+node[color=white fillcolor=white]
+1[color=black xlabel=16]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=black xlabel=15]; 6 [color=black xlabel=18]; 7; 8[color=black xlabel=14]; 9[color=black xlabel=13];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="black:black"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\digraph[scale=0.7]{scc17}{
+node[color=white fillcolor=white]
+1[color=black xlabel=16]; 2 [color=black xlabel=7]; 3 [color=black xlabel=10]; 4[color=black xlabel=11]; 5[color=black xlabel=15]; 6 [color=black xlabel=18]; 7[color=black xlabel=20]; 8[color=black xlabel=14]; 9[color=black xlabel=13];
+9 -> 8;
+8 -> 4 [color="black:black"];
+4 -> 3 [color="black:black"];
+3 -> 1;
+1 -> 5 [color="black:black"];
+5 -> 8 [color="black:black"];
+8 -> 9 [color="black:black"];
+9 -> 3;
+3 -> 5;
+8 -> 2 [color="black:black"];
+}
+
+\subsection{}
+\digraph[scale=0.7]{sniT}{
+1; 2; 3; 4; 5; 6; 7; 8; 9;
+8 -> 9;
+4 -> 8;
+3 -> 4;
+1 -> 3;
+5 -> 1;
+8 -> 5;
+9 -> 8;
+3 -> 9;
+5 -> 3;
+2 -> 8;
+}
+
+\subsection{}
+[[7],[6],[1,3,4,8,5,9],[2]]
+
+
+\part{}
+\section{}
+\subsection{}
+\begin{verbatim}
+public Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
+    Set<Delegate> result = new HashSet<>();
+    for (Delegate d : delegates){
+        Set<Delegate> dependent = e.getDependentDelegates(d);
+        dependent.retainAll(initial);
+        if (!dependent.isEmpty()){
+            result.add(d);
+        }
+    }
+    return result;
+}
+\end{verbatim}
+
+\begin{verbatim}
+public Set<Delegate> resultFromCache(){
+    return cache.entrySet().stream()
+            .filter(entry-> entry.getKey().target.equals(end))
+            .map(Map.Entry::getValue)
+            .flatMap(a -> a.values().stream())
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
+}
+\end{verbatim}
+
+\begin{verbatim}
+public Set<Delegate> solve(){
+    Queue<Step> steps = new LinkedList<>();
+    steps.add(new Step(start, start, initial));
+    while (!steps.isEmpty()){
+        Step s = steps.remove();
+        for (AdjacentEdge<Vertex, Event> edge : graph.adjacent(s.vertex)){
+            CacheKey key = new CacheKey(s.vertex, edge.target);
+            if (!cache.containsKey(key)){
+                cache.put(key, new HashMap<>());
+            }
+            if(cache.get(key).containsKey(s.delegates)){
+                continue;
+            }
+            Set<Delegate> newDelegates = stepDelegates(edge.edgeInfo, s.delegates);
+            cache.get(key).put(s.delegates, newDelegates);
+            steps.add(new Step(s.vertex, edge.target, newDelegates));
+        }
+    }
+
+    return resultFromCache();
+}
+\end{verbatim}
+
+\subsection{}
 
 \end{document}
