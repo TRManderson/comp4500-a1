@@ -73,6 +73,7 @@ public class DelegateFinder {
         private Vertex end;
         private Set<Delegate> initial;
         private Set<Delegate> delegates;
+        private Set<Delegate> result;
         private Map<CacheKey, Map<Set<Delegate>, Set<Delegate>>> cache;
 
         public Problem(Set<Delegate> delegates,
@@ -84,10 +85,10 @@ public class DelegateFinder {
             this.initial = initial;
             this.delegates = delegates;
             cache = new HashMap<>();
+            result = new HashSet<>();
         }
 
         public Set<Delegate> solve(){
-            Set<Delegate> result = new HashSet<>();
             Queue<Step> steps = new LinkedList<>();
             steps.add(new Step(start, initial));
             while (!steps.isEmpty()){
