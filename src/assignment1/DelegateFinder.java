@@ -112,15 +112,6 @@ public class DelegateFinder {
             return result;
         }
 
-        public Set<Delegate> resultFromCache(){
-            return cache.entrySet().stream()
-                    .filter(entry-> entry.getKey().target.equals(end))
-                    .map(Map.Entry::getValue)
-                    .flatMap(a -> a.values().stream())
-                    .flatMap(Set::stream)
-                    .collect(Collectors.toSet());
-        }
-
         public Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
             Set<Delegate> result = new HashSet<>();
             for (Delegate d : delegates){
