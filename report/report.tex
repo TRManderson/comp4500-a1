@@ -352,7 +352,7 @@ subgraph cluster_4{2;label="4"}
 \begin{verbatim}
 Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
     result = new Set()
-    for (Delegate d : delegates){
+    for d in delegates
         dependent = e.getDependentDelegates(d)
         dependent = dependent.instersection(initial)
         if not dependent.isEmpty()
@@ -393,5 +393,55 @@ Set<Delegate> findDelegates(delegates, G, start, end, initial){
 \end{verbatim}
 
 \subsection{}
+This section annotates the above pseudocode with a number or constant representing the computational complexity of the given line.
+
+\begin{verbatim}
+Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
+1   result = new Set()
+d   for d in delegates
+    1   dependent = e.getDependentDelegates(d)
+    d   dependent = dependent.instersection(initial)
+    1   if not dependent.isEmpty()
+    1       result.add(d)
+        endif
+    endfor
+1   return result
+}
+\end{verbatim}
+
+From the above, it can be seen that the stepDelegates function is \(O(|D|^2)\) where \(|D|\) represents the number of delegates.
+
+\begin{verbatim}
+Set<Delegate> findDelegates(delegates, G, start, end, initial){
+1   Q.initialise() # Queue<(Vertex, Set<Delegate>)>
+1   cache.initialise() # HashMap<(Vertex, Vertex), HashMap<Set<Delegate>, Set<Delegate>>>
+1   result.initialise() # Set<Delegate>
+1   Q.enqueue((start, initial))
+    while not Q.isEmpty()
+    1   (current, currentDelegates) = Q.next()
+    e   for edge in G.adjacent[current]
+        1   if (current, edge.target) not in cache
+        1       subCache = new HashMap()
+        1       cache.put((current, edge.target), subCache)
+            else
+        1       subCache = cache.get((current, edge.target))
+            endif
+        1   if currentDelegates in subCache
+                continue
+            newDelegates = stepDelegates(edge.edgeInfo, s.delegates)
+        1   if edge.target == end
+            d   result.union(newDelegates)
+            endif
+            subCache.put(currentDelegates, newDelegates)
+            Q.enqueue((edge.target, newDelegates))
+        endfor
+    endwhile
+    return result
+}
+\end{verbatim}
+
+From above it can be seen that the inside of the while loop is \(O(|E|\times|D|^2)\). There are \(2^|D|\) possible input sets to each edge, which means that in the event of a large cycle we will visit each edge at most \(2^{|D|}\) times, and it is this condition that determines how many times we run through the while loop. Thus, we have:
+$$O(\text{findDelegates}) = O(2^{|D|}\times |E| \times |D|^2)$$
+
 
 \end{document}
