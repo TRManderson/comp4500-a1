@@ -87,8 +87,9 @@ public class DelegateFinder {
         }
 
         public Set<Delegate> solve(){
+            Set<Delegate> result = new HashSet<>();
             Queue<Step> steps = new LinkedList<>();
-            steps.add(new Step(start, start, initial));
+            steps.add(new Step(start, initial));
             while (!steps.isEmpty()){
                 Step s = steps.remove();
                 for (AdjacentEdge<Vertex, Event> edge : graph.adjacent(s.vertex)){
@@ -100,12 +101,15 @@ public class DelegateFinder {
                         continue;
                     }
                     Set<Delegate> newDelegates = stepDelegates(edge.edgeInfo, s.delegates);
+                    if (edge.target.equals(end)){
+                        result.addAll(newDelegates);
+                    }
                     cache.get(key).put(s.delegates, newDelegates);
-                    steps.add(new Step(s.vertex, edge.target, newDelegates));
+                    steps.add(new Step(edge.target, newDelegates));
                 }
             }
 
-            return resultFromCache();
+            return result;
         }
 
         public Set<Delegate> resultFromCache(){
@@ -130,11 +134,10 @@ public class DelegateFinder {
         }
 
         private static class Step{
-            public Vertex parent;
+            // Equivalent to the tuples used in the queue pseudocode
             public Vertex vertex;
             public Set<Delegate> delegates;
-            public Step(Vertex parent, Vertex v, Set<Delegate> current){
-                this.parent = parent;
+            public Step(Vertex v, Set<Delegate> current){
                 this.vertex = v;
                 this.delegates = current;
             }

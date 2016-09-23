@@ -3,6 +3,7 @@
 \usepackage{tabularx}
 \usepackage[singlefile]{graphviz}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{verbatim}
 \title{COMP4500 Assignment 1}
 \author{Tom Manderson\\Student 43159835}
@@ -320,58 +321,74 @@ node[color=white fillcolor=white]
 }
 
 \subsection{}
-[[7],[6],[1,3,4,8,5,9],[2]]
 
+\begin{figure}[H]
+\centering
+\digraph[scale=0.7]{sccResult}{
+subgraph cluster_1{7;label="1"}
+subgraph cluster_2{6;label="2"}
+subgraph cluster_3{
+1; 3; 4; 5; 8; 9;
+label="3"
+}
+subgraph cluster_4{2;label="4"}
+9 -> 8;
+8 -> 4;
+4 -> 3;
+3 -> 1;
+1 -> 5;
+5 -> 8;
+8 -> 9;
+9 -> 3;
+3 -> 5;
+8 -> 2;
+}
+\caption{Graph with strongly connected components labeled by discovery order.}
+\end{figure}
 
 \part{}
 \section{}
 \subsection{}
 \begin{verbatim}
-public Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
-    Set<Delegate> result = new HashSet<>();
+Set<Delegate> stepDelegates(Event e, Set<Delegate> initial){
+    result = new Set()
     for (Delegate d : delegates){
-        Set<Delegate> dependent = e.getDependentDelegates(d);
-        dependent.retainAll(initial);
-        if (!dependent.isEmpty()){
-            result.add(d);
-        }
-    }
-    return result;
+        dependent = e.getDependentDelegates(d)
+        dependent = dependent.instersection(initial)
+        if not dependent.isEmpty()
+            result.add(d)
+        endif
+    endfor
+    return result
 }
 \end{verbatim}
 
 \begin{verbatim}
-public Set<Delegate> resultFromCache(){
-    return cache.entrySet().stream()
-            .filter(entry-> entry.getKey().target.equals(end))
-            .map(Map.Entry::getValue)
-            .flatMap(a -> a.values().stream())
-            .flatMap(Set::stream)
-            .collect(Collectors.toSet());
-}
-\end{verbatim}
-
-\begin{verbatim}
-public Set<Delegate> solve(){
-    Queue<Step> steps = new LinkedList<>();
-    steps.add(new Step(start, start, initial));
-    while (!steps.isEmpty()){
-        Step s = steps.remove();
-        for (AdjacentEdge<Vertex, Event> edge : graph.adjacent(s.vertex)){
-            CacheKey key = new CacheKey(s.vertex, edge.target);
-            if (!cache.containsKey(key)){
-                cache.put(key, new HashMap<>());
-            }
-            if(cache.get(key).containsKey(s.delegates)){
-                continue;
-            }
-            Set<Delegate> newDelegates = stepDelegates(edge.edgeInfo, s.delegates);
-            cache.get(key).put(s.delegates, newDelegates);
-            steps.add(new Step(s.vertex, edge.target, newDelegates));
-        }
-    }
-
-    return resultFromCache();
+Set<Delegate> findDelegates(delegates, G, start, end, initial){
+    Q.initialise() # Queue<(Vertex, Set<Delegate>)>
+    cache.initialise() # HashMap<(Vertex, Vertex), HashMap<Set<Delegate>, Set<Delegate>>>
+    result.initialise() # Set<Delegate>
+    Q.enqueue((start, initial))
+    while not Q.isEmpty()
+        (current, currentDelegates) = Q.next()
+        for edge in G.adjacent[current]
+            if (current, edge.target) not in cache
+                subCache = new HashMap()
+                cache.put((current, edge.target), subCache)
+            else
+                subCache = cache.get((current, edge.target))
+            endif
+            if currentDelegates in subCache
+                continue
+            newDelegates = stepDelegates(edge.edgeInfo, s.delegates)
+            if edge.target == end
+                result.union(newDelegates)
+            endif
+            subCache.put(currentDelegates, newDelegates)
+            Q.enqueue((edge.target, newDelegates))
+        endfor
+    endwhile
+    return result
 }
 \end{verbatim}
 
